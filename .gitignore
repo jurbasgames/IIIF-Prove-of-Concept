@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and logs
+.cache/
+logs/
+*.log
+
+# Docker build files
+data/
+docker/volumes/
+
+# Environment files
+.env
+
+# IDE settings
+.vscode/
+.idea/
