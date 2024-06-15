@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  cantaloupe:
+    image: edirom/cantaloupe
+    volumes:
+      - ../data/images:/var/lib/cantaloupe/images
+      - ./cantaloupe/cantaloupe.properties:/etc/cantaloupe.properties
+    ports:
+      - "8182:8182"
+    environment:
+      CANTALOUPE_CONFIG: /etc/cantaloupe.properties
+      JAVA_OPTS: "-Xms512m -Xmx2g"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8182/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
