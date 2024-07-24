@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Objeto, Categoria, Colecao, Visualizacao, Anotacao
+from .models import Manifesto, Tela, PaginaAnotacao, Anotacao, Imagem
 
 # Register your models here.
 
-admin.site.register(Objeto)
-admin.site.register(Categoria)
-admin.site.register(Colecao)
-admin.site.register(Visualizacao)
+admin.site.register(Manifesto)
+admin.site.register(Tela)
+admin.site.register(PaginaAnotacao)
 admin.site.register(Anotacao)
+admin.site.register(Imagem)
