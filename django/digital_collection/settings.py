@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'iiif_collection',
         'USER': 'root',
-        'PASSWORD': 'a5949989',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }

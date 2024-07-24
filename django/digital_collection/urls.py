@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from app.views import iiif_manifest
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('iiif/<int:image_id>/', iiif_manifest, name='iiif_manifest'),
 ]
