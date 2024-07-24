@@ -1,64 +1,93 @@
 from django.db import models
+from PIL import Image
 
 
-class Categoria(models.Model):
-    nome = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True, null=True)
+class Manifesto(models.Model):
+    tipo = models.CharField(max_length=50, default='Manifest')
+    rotulo = models.JSONField()  # Campos models.JSONField podem ser multi-idiomas
+    resumo = models.JSONField(blank=True, null=True)
+    metadados = models.JSONField(blank=True, null=True,
+                                 help_text="Metadados adicionais em formato JSON")
 
-    def __str__(self):
-        return self.nome
-
-
-class Objeto(models.Model):
-    titulo = models.CharField(max_length=255)
-    descricao = models.TextField(blank=True, null=True)
-    data_criacao = models.DateField()
-    dimensoes = models.CharField(max_length=100)
-    localizacao_atual = models.CharField(max_length=255, blank=True, null=True)
-    imagem_arquivo = models.ImageField(
-        upload_to='data/images', blank=True, null=False)
-    categoria = models.ForeignKey(
-        Categoria, on_delete=models.CASCADE, related_name='objetos')
-
-    class Meta:
-        verbose_name_plural = "Objetos"
+    # Relacionamentos
+    itens = models.ManyToManyField(
+        'Tela', related_name='manifestos', blank=True)
 
     def __str__(self):
-        return self.titulo
+        return self.rotulo.get('pt', 'Sem rótulo')
 
 
-class Colecao(models.Model):
-    nome = models.CharField(max_length=255)
-    descricao = models.TextField(blank=True, null=True)
-    objetos = models.ManyToManyField(Objeto, related_name='colecoes')
-
-    class Meta:
-        verbose_name_plural = "Coleções"
-
-    def __str__(self):
-        return self.nome
-
-
-class Visualizacao(models.Model):
-    objeto = models.ForeignKey(
-        Objeto, on_delete=models.CASCADE, related_name='visualizacoes')
-    altura = models.IntegerField()
+class Tela(models.Model):
+    rotulo = models.JSONField()
     largura = models.IntegerField()
-    rotulo = models.CharField(max_length=255)
-    formato = models.CharField(max_length=50)
-    anotacoes = models.ManyToManyField(
-        'Anotacao')
+    altura = models.IntegerField()
 
     class Meta:
-        verbose_name_plural = "Visualizações"
+        verbose_name = 'Tela'
+        verbose_name_plural = 'Telas'
 
     def __str__(self):
-        return self.rotulo
+        return self.rotulo.get('pt', 'Sem rótulo')
+
+
+class PaginaAnotacao(models.Model):
+    tela = models.ForeignKey(
+        Tela, on_delete=models.CASCADE, related_name='paginas_anotacoes')
+
+    def __str__(self):
+        return f'Página de Anotação {self.id}'
 
 
 class Anotacao(models.Model):
-    texto = models.TextField()
-    tipo = models.CharField(max_length=50)  # Comentário, Transcrição, Tradução
-    altura = models.IntegerField()
-    largura = models.IntegerField()
-    dimensoes = models.CharField(max_length=100)
+    texto = models.TextField(blank=True, null=True)
+    rotulo = models.JSONField(blank=True, null=True)
+    pagina_anotacao = models.ForeignKey(
+        PaginaAnotacao, on_delete=models.CASCADE, related_name='anotacoes')
+    motivo = models.CharField(max_length=50, choices=[
+        ('comment', 'Comentário'),
+        ('describing', 'Descrição'),
+        ('highlighting', 'Destaque'),
+        ('scanning', 'Digitalização')
+    ], default='comment')
+    x = models.IntegerField(
+        help_text="Coordenada X do canto superior esquerdo")
+    y = models.IntegerField(
+        help_text="Coordenada Y do canto superior esquerdo")
+    largura = models.IntegerField(help_text="Largura da área anotada")
+    altura = models.IntegerField(help_text="Altura da área anotada")
+    # Relacionamentos
+    imagem = models.ForeignKey(
+        'Imagem', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Anotação {self.id} - {self.motivo}'
+
+    def get_xywh(self):
+        """Retorna a string xywh."""
+        return f"{self.x},{self.y},{self.largura},{self.altura}"
+
+
+class Imagem(models.Model):
+    tipo = models.CharField(max_length=50, choices=[
+        ('fotografia', 'Fotografia'),
+        ('pintura', 'Pintura'),
+        ('manuscrito', 'Manuscrito'),
+        ('outro', 'Outro')
+    ], default='fotografia')
+    formato = models.CharField(max_length=50, choices=[
+        ('jpeg', 'JPEG'),
+        ('tiff', 'TIFF'),
+        ('png', 'PNG')
+    ], default='tiff')
+    arquivo_imagem = models.ImageField(upload_to='data/images')
+    altura = models.IntegerField(blank=True, null=True)
+    largura = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Imagem {self.id} - {self.formato}'
+
+    def save(self, *args, **kwargs):
+        if self.arquivo_imagem and not self.altura:
+            img = Image.open(self.arquivo_imagem)
+            self.largura, self.altura = img.size
+        super().save(*args, **kwargs)
