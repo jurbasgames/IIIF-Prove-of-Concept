@@ -1,10 +1,12 @@
 from django.contrib import admin
-from .models import Manifesto, Tela, PaginaAnotacao, Anotacao, Imagem
+from .models import Manifest, Canvas, AnnotationPage, Image, Label, Metadata, Annotation
 
 # Register your models here.
 
-admin.site.register(Manifesto)
-admin.site.register(Tela)
-admin.site.register(PaginaAnotacao)
-admin.site.register(Anotacao)
-admin.site.register(Imagem)
+admin.site.register(Manifest)
+admin.site.register(Canvas)
+admin.site.register(AnnotationPage)
+admin.site.register(Image)
+admin.site.register(Label)
+admin.site.register(Metadata)
+admin.site.register(Annotation)

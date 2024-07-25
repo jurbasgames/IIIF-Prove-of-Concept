@@ -1,93 +1,77 @@
 from django.db import models
-from PIL import Image
+import uuid
 
 
-class Manifesto(models.Model):
-    tipo = models.CharField(max_length=50, default='Manifest')
-    rotulo = models.JSONField()  # Campos models.JSONField podem ser multi-idiomas
-    resumo = models.JSONField(blank=True, null=True)
-    metadados = models.JSONField(blank=True, null=True,
-                                 help_text="Metadados adicionais em formato JSON")
-
-    # Relacionamentos
-    itens = models.ManyToManyField(
-        'Tela', related_name='manifestos', blank=True)
+class Label(models.Model):
+    language = models.CharField(max_length=10)
+    value = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.rotulo.get('pt', 'Sem rótulo')
+        return f"{self.language}: {self.value}"
 
 
-class Tela(models.Model):
-    rotulo = models.JSONField()
-    largura = models.IntegerField()
-    altura = models.IntegerField()
+class Manifest(models.Model):
+    context = models.URLField(
+        default="http://iiif.io/api/presentation/3/context.json")
+    label = models.ManyToManyField(Label, related_name="manifest_labels")
+    summary = models.ManyToManyField(Label, related_name="manifest_summaries")
+    items = models.ManyToManyField('Canvas', related_name='manifests')
+
+    def __str__(self):
+        return f"{self.id} {self.label.first().value}"
+
+
+class Metadata(models.Model):
+    manifest = models.ForeignKey(
+        Manifest, on_delete=models.CASCADE, related_name='metadata')
+    label = models.ManyToManyField(Label, related_name="metadata_labels")
+    value = models.ManyToManyField(Label, related_name="metadata_values")
+
+    def __str__(self):
+        return f"Metadata for {self.manifest.id}"
+
+
+class Canvas(models.Model):
+    label = models.ManyToManyField(Label, related_name="canvas_labels")
+    height = models.IntegerField()
+    width = models.IntegerField()
+    annotation_pages = models.ManyToManyField(
+        'AnnotationPage', related_name="canvas_items")
+    painting_annotations = models.ManyToManyField(
+        'Annotation', related_name="canvas_painting_annotations")
 
     class Meta:
-        verbose_name = 'Tela'
-        verbose_name_plural = 'Telas'
+        verbose_name_plural = "Canvases"
 
     def __str__(self):
-        return self.rotulo.get('pt', 'Sem rótulo')
+        return self.id
 
 
-class PaginaAnotacao(models.Model):
-    tela = models.ForeignKey(
-        Tela, on_delete=models.CASCADE, related_name='paginas_anotacoes')
-
-    def __str__(self):
-        return f'Página de Anotação {self.id}'
-
-
-class Anotacao(models.Model):
-    texto = models.TextField(blank=True, null=True)
-    rotulo = models.JSONField(blank=True, null=True)
-    pagina_anotacao = models.ForeignKey(
-        PaginaAnotacao, on_delete=models.CASCADE, related_name='anotacoes')
-    motivo = models.CharField(max_length=50, choices=[
-        ('comment', 'Comentário'),
-        ('describing', 'Descrição'),
-        ('highlighting', 'Destaque'),
-        ('scanning', 'Digitalização')
-    ], default='comment')
-    x = models.IntegerField(
-        help_text="Coordenada X do canto superior esquerdo")
-    y = models.IntegerField(
-        help_text="Coordenada Y do canto superior esquerdo")
-    largura = models.IntegerField(help_text="Largura da área anotada")
-    altura = models.IntegerField(help_text="Altura da área anotada")
-    # Relacionamentos
-    imagem = models.ForeignKey(
-        'Imagem', on_delete=models.CASCADE)
+class AnnotationPage(models.Model):
+    items = models.ManyToManyField(
+        'Annotation', related_name="annotation_page_items")
 
     def __str__(self):
-        return f'Anotação {self.id} - {self.motivo}'
-
-    def get_xywh(self):
-        """Retorna a string xywh."""
-        return f"{self.x},{self.y},{self.largura},{self.altura}"
+        return self.id
 
 
-class Imagem(models.Model):
-    tipo = models.CharField(max_length=50, choices=[
-        ('fotografia', 'Fotografia'),
-        ('pintura', 'Pintura'),
-        ('manuscrito', 'Manuscrito'),
-        ('outro', 'Outro')
-    ], default='fotografia')
-    formato = models.CharField(max_length=50, choices=[
-        ('jpeg', 'JPEG'),
-        ('tiff', 'TIFF'),
-        ('png', 'PNG')
-    ], default='tiff')
-    arquivo_imagem = models.ImageField(upload_to='data/images')
-    altura = models.IntegerField(blank=True, null=True)
-    largura = models.IntegerField(blank=True, null=True)
+class Image(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    label = models.ManyToManyField(Label, related_name="image_labels")
+    format = models.CharField(max_length=50)
+    height = models.IntegerField()
+    width = models.IntegerField()
 
     def __str__(self):
-        return f'Imagem {self.id} - {self.formato}'
+        return self.id
 
-    def save(self, *args, **kwargs):
-        if self.arquivo_imagem and not self.altura:
-            img = Image.open(self.arquivo_imagem)
-            self.largura, self.altura = img.size
-        super().save(*args, **kwargs)
+
+class Annotation(models.Model):
+    target = models.ForeignKey(
+        'Canvas', on_delete=models.CASCADE, related_name='target_annotations')
+    body = models.ForeignKey(
+        Image, on_delete=models.CASCADE, related_name='annotations_as_body')
+    motivation = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.id
