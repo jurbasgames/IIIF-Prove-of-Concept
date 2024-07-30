@@ -1,7 +1,7 @@
 # utils.py
 from django.shortcuts import get_object_or_404
 from .models import Manifest as ManifestModel, Canvas as CanvasModel
-from iiif_prezi3 import Manifest
+from iiif_prezi3 import Manifest, Annotation
 import os
 
 APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
@@ -28,13 +28,14 @@ def create_manifest(object_id):
 
         # Painting Annotations
         for image in canvas.items.all():
-            image_annotation = canvas_iiif.make_annotation(
+            image_annotation = Annotation(
+                id=f"{APP_HOST}/annotation/{image.pk}",
                 motivation="painting",
                 target=canvas_iiif.id,
                 body={
                     "id": f"{IMAGE_SERVER}/iiif/image/{image.pk}.{image.format}/full/full/0/default.jpg",
                     "type": "Image",
-                    "format": image.format,
+                    "format": f"image/{image.format.lower()}",
                     "height": image.height,
                     "width": image.width
                 }
@@ -43,7 +44,8 @@ def create_manifest(object_id):
 
         # Non-Painting Annotations
         for text_annotation in canvas.annotations.all():
-            text_annotation_iiif = canvas_iiif.make_annotation(
+            text_annotation_iiif = Annotation(
+                id=f"{APP_HOST}/annotation/{text_annotation.pk}",
                 motivation=text_annotation.motivation,
                 target=canvas_iiif.id,
                 body={
