@@ -20,5 +20,5 @@ from app.views import manifest_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('manifest/<str:image_id>/', manifest_view, name='manifesto'),
+    path('manifest/<int:image_id>/', manifest_view, name='manifesto'),
 ]
