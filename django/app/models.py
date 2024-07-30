@@ -11,7 +11,7 @@ class Label(models.Model):
     value = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.id} {self.language} {self.value}"
+        return f"{self.language}: {self.value}"
 
 
 class Image(models.Model):
@@ -27,7 +27,7 @@ class Image(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            super(Image, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
         if self.file:
             img = PilImage.open(self.file)
@@ -46,7 +46,7 @@ class Image(models.Model):
 
             buffer.close()
 
-        super(Image, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class TextAnnotation(models.Model):
@@ -58,11 +58,10 @@ class TextAnnotation(models.Model):
     y = models.FloatField()
     width = models.FloatField()
     height = models.FloatField()
-    canvas = models.ForeignKey(
-        'Canvas', on_delete=models.CASCADE)
+    canvas = models.ForeignKey('Canvas', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.id} {self.motivation} {self.text}"
+        return f"{self.motivation}: {self.text[:30]}"
 
 
 class Canvas(models.Model):
@@ -78,7 +77,7 @@ class Canvas(models.Model):
 
     def __str__(self):
         label = self.label.first()
-        return f"{self.id} {label.value if label else 'No Label'}"
+        return f"Canvas {self.id} ({label.value if label else 'No Label'})"
 
 
 class Manifest(models.Model):
@@ -92,7 +91,7 @@ class Manifest(models.Model):
 
     def __str__(self):
         label = self.label.first()
-        return f"{self.id} {label.value if label else 'No Label'}"
+        return f"Manifest {self.id} ({label.value if label else 'No Label'})"
 
 
 class Metadata(models.Model):
@@ -102,4 +101,4 @@ class Metadata(models.Model):
     value = models.ManyToManyField(Label, related_name="metadata_values")
 
     def __str__(self):
-        return f"Metadata for {self.manifest.id}"
+        return f"Metadata for Manifest {self.manifest.id}"
