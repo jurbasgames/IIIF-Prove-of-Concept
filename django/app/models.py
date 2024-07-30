@@ -15,18 +15,15 @@ class Label(models.Model):
 
 
 class Image(models.Model):
-    format = models.CharField(
-        max_length=50, db_index=True, blank=True)
+    format = models.CharField(max_length=50, db_index=True, blank=True)
     height = models.IntegerField(
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
     width = models.IntegerField(
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
     file = models.FileField(upload_to='data/images/')
-    annotation_page = models.ForeignKey(
-        'AnnotationPage', on_delete=models.CASCADE, related_name='images', blank=True, null=True)
 
     def __str__(self):
-        return f"Image {self.id} on AnnotationPage {self.annotation_page.id}"
+        return f"Image {self.id}"
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -53,8 +50,7 @@ class Image(models.Model):
 
 
 class TextAnnotation(models.Model):
-    label = models.ManyToManyField(Label, related_name="annotation_labels")
-    motivation = models.CharField(max_length=255, default='tag', choices=[
+    motivation = models.CharField(max_length=255, default='comment', choices=[
         ('comment', 'Comentário'), ('tag', 'Tag'), ('scanning', 'Digitalização'), ('transcribing', 'Transcrição')])
     text = models.TextField()
     language = models.CharField(max_length=10, db_index=True)
@@ -62,22 +58,20 @@ class TextAnnotation(models.Model):
     y = models.FloatField()
     width = models.FloatField()
     height = models.FloatField()
+    canvas = models.ForeignKey(
+        'Canvas', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Annotation {self.id} on {self.target.id}"
+        return f"{self.id} {self.motivation} {self.text}"
 
 
 class Canvas(models.Model):
     label = models.ManyToManyField(Label, related_name="canvas_labels")
     height = models.IntegerField()
     width = models.IntegerField()
-    # AnnotationPage for Painting Annotations
-    items = models.ForeignKey(
-        Image, on_delete=models.CASCADE, blank=True, null=True)
-
-    # AnnotationPage for Non-Painting Annotations
-    annotations = models.ForeignKey(
-        TextAnnotation, on_delete=models.CASCADE, blank=True, null=True)
+    items = models.ManyToManyField(Image, related_name='canvases', blank=True)
+    annotations = models.ManyToManyField(
+        TextAnnotation, related_name='canvases', blank=True)
 
     class Meta:
         verbose_name_plural = "Canvases"
@@ -91,8 +85,8 @@ class Manifest(models.Model):
     context = models.URLField(
         default="http://iiif.io/api/presentation/3/context.json")
     label = models.ManyToManyField(Label, related_name="manifest_labels")
-    summary = models.ForeignKey(
-        Label, on_delete=models.CASCADE, related_name="manifest_summaries", blank=True, null=True)
+    summary = models.ForeignKey(Label, on_delete=models.CASCADE,
+                                related_name="manifest_summaries", blank=True, null=True)
     items = models.ManyToManyField(
         Canvas, related_name='manifests', blank=True)
 

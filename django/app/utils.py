@@ -40,9 +40,9 @@ def create_manifest(object_id):
                 target=canvas_iiif.id,
                 body=ResourceItem(
                     id=f"{
-                        IMAGE_SERVER}/iiif/image/{image.pk}.{image.format}/full/full/0/default.jpg",
-                    type="Image",
+                        IMAGE_SERVER}/{image.pk}.{image.format.lower()}/full/full/0/default.jpg",
                     format=f"image/{image.format.lower()}",
+                    type="Image",
                     height=image.height,
                     width=image.width
                 )
@@ -51,7 +51,7 @@ def create_manifest(object_id):
 
         if painting_annotation_items:
             painting_annotation_page = AnnotationPage(
-                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/painting",
+                id=f"{APP_HOST}/{object_id}/page/{canvas.pk}/1",
                 type="AnnotationPage",
                 items=painting_annotation_items
             )
