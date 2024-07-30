@@ -1,7 +1,7 @@
 # utils.py
 from django.shortcuts import get_object_or_404
 from .models import Manifest as ManifestModel, Canvas as CanvasModel
-from iiif_prezi3 import Manifest, Annotation
+from iiif_prezi3 import Manifest, Canvas, Annotation, AnnotationPage, ResourceItem
 import os
 
 APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
@@ -19,41 +19,70 @@ def create_manifest(object_id):
             db_manifest.summary.value]} if db_manifest.summary else None
     )
 
+    canvases = []
+
     for canvas in db_manifest.items.all():
-        canvas_iiif = manifest_iiif.make_canvas(
+        canvas_iiif = Canvas(
             id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}",
+            type="Canvas",
             height=canvas.height,
-            width=canvas.width
+            width=canvas.width,
+            label={label.language: [label.value]
+                   for label in canvas.label.all()}
         )
 
-        # Painting Annotations
+        painting_annotation_items = []
         for image in canvas.items.all():
             image_annotation = Annotation(
                 id=f"{APP_HOST}/annotation/{image.pk}",
+                type="Annotation",
                 motivation="painting",
                 target=canvas_iiif.id,
-                body={
-                    "id": f"{IMAGE_SERVER}/iiif/image/{image.pk}.{image.format}/full/full/0/default.jpg",
-                    "type": "Image",
-                    "format": f"image/{image.format.lower()}",
-                    "height": image.height,
-                    "width": image.width
-                }
+                body=ResourceItem(
+                    id=f"{
+                        IMAGE_SERVER}/iiif/image/{image.pk}.{image.format}/full/full/0/default.jpg",
+                    type="Image",
+                    format=f"image/{image.format.lower()}",
+                    height=image.height,
+                    width=image.width
+                )
             )
-            canvas_iiif.add_annotation(image_annotation)
+            painting_annotation_items.append(image_annotation)
 
-        # Non-Painting Annotations
+        if painting_annotation_items:
+            painting_annotation_page = AnnotationPage(
+                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/painting",
+                type="AnnotationPage",
+                items=painting_annotation_items
+            )
+            canvas_iiif.items = [painting_annotation_page]
+
+        non_painting_annotation_items = []
         for text_annotation in canvas.annotations.all():
             text_annotation_iiif = Annotation(
                 id=f"{APP_HOST}/annotation/{text_annotation.pk}",
+                type="Annotation",
                 motivation=text_annotation.motivation,
                 target=canvas_iiif.id,
-                body={
-                    "type": "TextualBody",
-                    "value": text_annotation.text,
-                    "language": text_annotation.language
-                }
+                body=ResourceItem(
+                    type="TextualBody",
+                    value=text_annotation.text,
+                    language=text_annotation.language
+                )
             )
-            canvas_iiif.add_annotation(text_annotation_iiif)
+            non_painting_annotation_items.append(text_annotation_iiif)
+
+        if non_painting_annotation_items:
+            non_painting_annotation_page = AnnotationPage(
+                id=f"{
+                    APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/non-painting",
+                type="AnnotationPage",
+                items=non_painting_annotation_items
+            )
+            canvas_iiif.items.append(non_painting_annotation_page)
+
+        canvases.append(canvas_iiif)
+
+    manifest_iiif.items = canvases
 
     return manifest_iiif.json(indent=2)
