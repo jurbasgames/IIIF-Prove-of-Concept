@@ -1,4 +1,3 @@
-# utils.py
 from django.shortcuts import get_object_or_404
 from .models import Manifest as ManifestModel, Canvas as CanvasModel
 from iiif_prezi3 import Manifest, Canvas, Annotation, AnnotationPage, ResourceItem
