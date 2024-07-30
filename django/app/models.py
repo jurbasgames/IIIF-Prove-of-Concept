@@ -20,7 +20,7 @@ class Image(models.Model):
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
     width = models.IntegerField(
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
-    file = models.FileField(upload_to='data/images/')
+    file = models.FileField()
 
     def __str__(self):
         return f"Image {self.id}"
