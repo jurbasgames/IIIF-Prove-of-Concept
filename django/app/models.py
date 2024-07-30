@@ -7,12 +7,11 @@ import io
 
 class Label(models.Model):
     language = models.CharField(
-        max_length=10, db_index=True, default=None, blank=True)
+        max_length=10, db_index=True, default="None", blank=True)
     value = models.CharField(max_length=255)
 
     def __str__(self):
-        label = self.label.first()
-        return f"{self.id} {label.value if label else 'No Label'}"
+        return f"{self.id} {self.language} {self.value}"
 
 
 class Image(models.Model):
@@ -53,15 +52,7 @@ class Image(models.Model):
         super(Image, self).save(*args, **kwargs)
 
 
-class AnnotationPage(models.Model):
-
-    def __str__(self):
-        return f"AnnotationPage {self.id}"
-
-
 class TextAnnotation(models.Model):
-    annotation_page = models.ForeignKey(
-        AnnotationPage, on_delete=models.CASCADE, related_name='text_annotations')
     label = models.ManyToManyField(Label, related_name="annotation_labels")
     motivation = models.CharField(max_length=255, default='tag', choices=[
         ('comment', 'Comentário'), ('tag', 'Tag'), ('scanning', 'Digitalização'), ('transcribing', 'Transcrição')])
@@ -81,12 +72,12 @@ class Canvas(models.Model):
     height = models.IntegerField()
     width = models.IntegerField()
     # AnnotationPage for Painting Annotations
-    items = models.ForeignKey(AnnotationPage, on_delete=models.CASCADE,
-                              related_name='canvas_items', blank=True, null=True)
+    items = models.ForeignKey(
+        Image, on_delete=models.CASCADE, blank=True, null=True)
 
     # AnnotationPage for Non-Painting Annotations
     annotations = models.ForeignKey(
-        AnnotationPage, on_delete=models.CASCADE, related_name='canvas_annotation_page', blank=True, null=True)
+        TextAnnotation, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Canvases"
@@ -104,6 +95,10 @@ class Manifest(models.Model):
         Label, on_delete=models.CASCADE, related_name="manifest_summaries", blank=True, null=True)
     items = models.ManyToManyField(
         Canvas, related_name='manifests', blank=True)
+
+    def __str__(self):
+        label = self.label.first()
+        return f"{self.id} {label.value if label else 'No Label'}"
 
 
 class Metadata(models.Model):

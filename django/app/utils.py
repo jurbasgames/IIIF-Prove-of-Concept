@@ -1,48 +1,61 @@
+# utils.py
 from django.shortcuts import get_object_or_404
-from .models import Manifest as ManifestModel
-from iiif_prezi3 import Manifest, config
+from .models import Manifest as ManifestModel, AnnotationPage as AnnotationPageModel
+from iiif_prezi3 import Manifest
 import os
-import urllib.parse
 
 APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
+IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:3132/iiif")
 
 
-def create_manifest(manifest_id):
-    db_manifest = get_object_or_404(ManifestModel, pk=manifest_id)
+def create_manifest(object_id):
+    db_manifest = get_object_or_404(ManifestModel, pk=object_id)
     manifest_iiif = Manifest(
-        id=f"{APP_HOST}/manifest/{db_manifest.pk}",
+        id=f"{APP_HOST}/{object_id}/manifest",
         type="Manifest",
         label={label.language: [label.value]
                for label in db_manifest.label.all()},
-        summary={summary.language: [summary.value] for summary in db_manifest.summary.all(
-        )} if db_manifest.summary.exists() else None
+        summary={db_manifest.summary.language: [db_manifest.summary.value]
+                 } if db_manifest.summary else None
     )
 
-    for db_canvas in db_manifest.items.all():
+    for canva in db_manifest.items.all():
         canvas_iiif = manifest_iiif.make_canvas(
-            id=f"{APP_HOST}/canvas/{db_canvas.pk}",
-            height=db_canvas.height,
-            width=db_canvas.width
+            id=f"{APP_HOST}/{object_id}/canvas/{canva.pk}",
+            height=canva.height,
+            width=canva.width
         )
 
-        for annotation_page in db_canvas.annotation_pages.all():
-            anno_page_iiif = canvas_iiif.add_annotation_page(
-                id=annotation_page.id)
+        # Painting Annotations
+        if canva.items:
+            annotation_page = canva.items
+            for image in annotation_page.images.all():
+                image_annotation = canvas_iiif.make_annotation(
+                    motivation="painting",
+                    target=canvas_iiif.id,
+                    body={
+                        "id": f"{IMAGE_SERVER}/iiif/image/{image.pk}.{image.format}/full/full/0/default.jpg",
+                        "type": "Image",
+                        "format": image.format,
+                        "height": image.height,
+                        "width": image.width
+                    }
+                )
+                canvas_iiif.add_annotation(image_annotation)
 
-            for annotation in annotation_page.items.all():
-                image = annotation.body
-                anno_iiif = anno_page_iiif.add_annotation(
-                    id=f"{APP_HOST}/annotation/{annotation.pk}",
-                    motivation=annotation.motivation,
-                    on=canvas_iiif.id
+        # Non-Painting Annotations
+        if canva.annotations:
+            annotation_page = canva.annotations
+            for text_annotation in annotation_page.text_annotations.all():
+                text_annotation_iiif = canvas_iiif.make_annotation(
+                    motivation=text_annotation.motivation,
+                    target=canvas_iiif.id,
+                    body={
+                        "type": "TextualBody",
+                        "value": text_annotation.text,
+                        "language": text_annotation.language
+                    }
                 )
-                anno_iiif.resource = anno_iiif.make_image(
-                    id=image.id,
-                    label={label.language: [label.value]
-                           for label in image.label.all()},
-                    format=image.format,
-                    height=image.height,
-                    width=image.width
-                )
+                canvas_iiif.add_annotation(text_annotation_iiif)
 
     return manifest_iiif.json(indent=2)
