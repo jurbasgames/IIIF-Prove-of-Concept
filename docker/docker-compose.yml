@@ -4,7 +4,7 @@ services:
     image: edirom/cantaloupe
     volumes:
       - ../data/images:/var/lib/cantaloupe/images
-      - ./cantaloupe/cantaloupe.properties:/etc/cantaloupe.properties
+      - ./image_server/cantaloupe.properties:/etc/cantaloupe.properties
     ports:
       - "8182:8182"
     environment:
@@ -31,12 +31,11 @@ services:
       - "3306:3306"
 
   web:
-    build: ./docker/django
+    build: ./presentation_api
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./django:/app
+      - ../django:/app
       - ../data/images:/app/data/images
-
     ports:
       - "8000:8000"
     depends_on:
