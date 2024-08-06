@@ -63,16 +63,17 @@ def create_manifest(object_id):
                 motivation=text_annotation.motivation,
                 target=canvas_iiif.id,
                 body=ResourceItem(
-                    type="TextualBody",
+                    id=f"{APP_HOST}/textannotation/{text_annotation.pk}",
                     value=text_annotation.text,
-                    language=text_annotation.language
+                    language=text_annotation.language,
+                    type="TextualBody"
                 )
             )
             non_painting_annotation_items.append(text_annotation_iiif)
 
         if non_painting_annotation_items:
             non_painting_annotation_page = AnnotationPage(
-                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/non-painting",
+                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page",
                 type="AnnotationPage",
                 items=non_painting_annotation_items
             )
