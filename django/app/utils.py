@@ -18,6 +18,17 @@ def create_manifest(object_id):
             db_manifest.summary.value]} if db_manifest.summary else None
     )
 
+    # Metadados
+    metadata = []
+    for data in db_manifest.metadata.all():
+        md_item = {
+            "label": {label.language: [label.value] for label in data.label.all()},
+            "value": {value.language: [value.value] for value in data.value.all()}
+        }
+        metadata.append(md_item)
+    manifest_iiif.metadata = metadata
+
+    # Canvas
     canvases = []
 
     for canvas in db_manifest.items.all():
@@ -30,6 +41,7 @@ def create_manifest(object_id):
                    for label in canvas.label.all()}
         )
 
+        # Imagens
         painting_annotation_items = []
         for image in canvas.items.all():
             image_annotation = Annotation(
@@ -55,6 +67,7 @@ def create_manifest(object_id):
             )
             canvas_iiif.items = [painting_annotation_page]
 
+        # Anotações de texto
         non_painting_annotation_items = []
         for text_annotation in canvas.annotations.all():
             text_annotation_iiif = Annotation(
