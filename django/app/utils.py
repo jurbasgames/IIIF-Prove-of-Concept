@@ -10,7 +10,7 @@ IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:3132/iiif")
 def create_manifest(object_id):
     db_manifest = get_object_or_404(ManifestModel, pk=object_id)
     manifest_iiif = Manifest(
-        id=f"{APP_HOST}/{object_id}/manifest",
+        id=f"{APP_HOST}/manifest/{object_id}",
         type="Manifest",
         label={label.language: [label.value]
                for label in db_manifest.label.all()},
@@ -22,7 +22,7 @@ def create_manifest(object_id):
 
     for canvas in db_manifest.items.all():
         canvas_iiif = Canvas(
-            id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}",
+            id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}",
             type="Canvas",
             height=canvas.height,
             width=canvas.width,
@@ -33,7 +33,7 @@ def create_manifest(object_id):
         painting_annotation_items = []
         for image in canvas.items.all():
             image_annotation = Annotation(
-                id=f"{APP_HOST}/annotation/{image.pk}",
+                id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/annotation/{image.pk}",
                 type="Annotation",
                 motivation="painting",
                 target=canvas_iiif.id,
@@ -49,7 +49,7 @@ def create_manifest(object_id):
 
         if painting_annotation_items:
             painting_annotation_page = AnnotationPage(
-                id=f"{APP_HOST}/{object_id}/page/{canvas.pk}/1",
+                id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/page/1",
                 type="AnnotationPage",
                 items=painting_annotation_items
             )
@@ -58,12 +58,12 @@ def create_manifest(object_id):
         non_painting_annotation_items = []
         for text_annotation in canvas.annotations.all():
             text_annotation_iiif = Annotation(
-                id=f"{APP_HOST}/annotation/{text_annotation.pk}",
+                id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/textannotation/{text_annotation.pk}",
                 type="Annotation",
                 motivation=text_annotation.motivation,
                 target=canvas_iiif.id,
                 body=ResourceItem(
-                    id=f"{APP_HOST}/textannotation/{text_annotation.pk}",
+                    id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/textannotation/resource/{text_annotation.pk}",
                     value=text_annotation.text,
                     language=text_annotation.language,
                     type="TextualBody"
@@ -73,7 +73,7 @@ def create_manifest(object_id):
 
         if non_painting_annotation_items:
             non_painting_annotation_page = AnnotationPage(
-                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page",
+                id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/textannotationpage",
                 type="AnnotationPage",
                 items=non_painting_annotation_items
             )
