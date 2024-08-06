@@ -61,13 +61,13 @@ def create_manifest(object_id):
                 id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/textannotation/{text_annotation.pk}",
                 type="Annotation",
                 motivation=text_annotation.motivation,
-                target=canvas_iiif.id,
-                body=ResourceItem(
-                    id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/textannotation/resource/{text_annotation.pk}",
-                    value=text_annotation.text,
-                    language=text_annotation.language,
-                    type="TextualBody"
-                )
+                body={
+                    "type": "TextualBody",
+                    "value": text_annotation.text,
+                    "language": text_annotation.language,
+                    "format": "text/plain",
+                },
+                target=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/page/1#xywh={text_annotation.x},{text_annotation.y},{text_annotation.width},{text_annotation.height}"
             )
             non_painting_annotation_items.append(text_annotation_iiif)
 
