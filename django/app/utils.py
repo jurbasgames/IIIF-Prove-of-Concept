@@ -38,8 +38,7 @@ def create_manifest(object_id):
                 motivation="painting",
                 target=canvas_iiif.id,
                 body=ResourceItem(
-                    id=f"{
-                        IMAGE_SERVER}/{image.pk}.{image.format.lower()}/full/full/0/default.jpg",
+                    id=f"{IMAGE_SERVER}/{image.pk}.{image.format.lower()}/full/full/0/default.jpg",
                     format=f"image/{image.format.lower()}",
                     type="Image",
                     height=image.height,
@@ -73,8 +72,7 @@ def create_manifest(object_id):
 
         if non_painting_annotation_items:
             non_painting_annotation_page = AnnotationPage(
-                id=f"{
-                    APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/non-painting",
+                id=f"{APP_HOST}/{object_id}/canvas/{canvas.pk}/annotation-page/non-painting",
                 type="AnnotationPage",
                 items=non_painting_annotation_items
             )
