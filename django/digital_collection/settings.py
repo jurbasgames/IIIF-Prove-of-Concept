@@ -80,12 +80,15 @@ WSGI_APPLICATION = 'digital_collection.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': os.getenv('DB_NAME', 'iiif_collection'),
         'USER': os.getenv('DB_USER', 'django_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', '123456789'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '3306'),
+        'OPTIONS': {
+            'autocommit': True
+        }
     }
 }
 
