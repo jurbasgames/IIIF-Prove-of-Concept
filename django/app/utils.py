@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
-from .models import Manifest as ManifestModel, Canvas as CanvasModel
+from .models import Manifest as ManifestModel, Canvas
 from iiif_prezi3 import Manifest, Canvas, Annotation, AnnotationPage, ResourceItem
 import os
 
 APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
-IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:8182/iiif")
+IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:8182")
 
 
 def create_manifest(object_id):
@@ -50,7 +50,7 @@ def create_manifest(object_id):
                 motivation="painting",
                 target=canvas_iiif.id,
                 body=ResourceItem(
-                    id=f"{IMAGE_SERVER}/{image.pk}.{image.format.lower()}/full/full/0/default.jpg",
+                    id=f"{IMAGE_SERVER}/iiif/3/{image.pk}.{image.format.lower()}/full/max/0/default.jpg",
                     format=f"image/{image.format.lower()}",
                     type="Image",
                     height=image.height,
