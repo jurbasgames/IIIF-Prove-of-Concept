@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-    cantaloupe:
+  cantaloupe:
     image: edirom/cantaloupe
     volumes:
       - ./data/images:/var/lib/cantaloupe/images
@@ -46,8 +46,8 @@ services:
       DB_NAME: ${MYSQL_DATABASE}
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_HOST: db
+      DB_PORT: 3306
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
 volumes:
