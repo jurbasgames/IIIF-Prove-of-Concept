@@ -3,7 +3,7 @@ services:
   cantaloupe:
     image: edirom/cantaloupe
     volumes:
-      - ./data/images:/var/lib/cantaloupe/images
+      - ./docker/volume/data:/var/lib/cantaloupe/images
       - ./cantaloupe/cantaloupe.properties:/etc/cantaloupe.properties
     ports:
       - "8182:8182"
@@ -26,7 +26,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - ./docker/volumes/db_data:/var/lib/mysql
+      - ./docker/volume/db_data:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -48,8 +48,4 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_HOST: db
       DB_PORT: 3306
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-
-volumes:
-  db_data:
-  data:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-"django-insecure"}
