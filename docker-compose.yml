@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  cantaloupe:
+    cantaloupe:
     image: edirom/cantaloupe
     volumes:
       - ./data/images:/var/lib/cantaloupe/images
@@ -21,12 +21,12 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_DATABASE: iiif_collection
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./docker/volumes/db_data:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -37,17 +37,19 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./django:/app
-      - ./data/images:/app/data/images
+      - ./docker/volume/data:/app/data/images
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
-      DB_NAME: iiif_collection
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_HOST: db
-      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
 volumes:
   db_data:
+  data:
