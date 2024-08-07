@@ -4,7 +4,7 @@ from iiif_prezi3 import Manifest, Canvas, Annotation, AnnotationPage, ResourceIt
 import os
 
 APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
-IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:3132/iiif")
+IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:8182/iiif")
 
 
 def create_manifest(object_id):
