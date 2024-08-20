@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app.views import manifest_view
+from app.views import manifest_view, mirador_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('manifest/<int:manifest_id>/', manifest_view, name='manifest'),
+    path('', mirador_view, name='mirador'),
 ]

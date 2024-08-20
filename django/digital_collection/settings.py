@@ -130,3 +130,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
+IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:8182")

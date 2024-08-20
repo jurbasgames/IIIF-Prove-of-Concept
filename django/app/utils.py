@@ -1,10 +1,7 @@
 from django.shortcuts import get_object_or_404
+from digital_collection.settings import APP_HOST, IMAGE_SERVER
 from .models import Manifest as ManifestModel, Canvas
 from iiif_prezi3 import Manifest, Canvas, Annotation, AnnotationPage, ResourceItem
-import os
-
-APP_HOST = os.getenv("APP_HOST", "http://localhost:8000")
-IMAGE_SERVER = os.getenv("IMAGE_SERVER", "http://localhost:8182")
 
 
 def create_manifest(object_id):
