@@ -11,6 +11,7 @@ logs/
 # Docker build files
 data/
 docker/volumes/
+docker/volume/
 
 # Environment files
 .env
