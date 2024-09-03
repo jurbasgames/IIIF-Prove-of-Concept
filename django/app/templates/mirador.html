@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mirador</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/mirador@latest/dist/mirador.min.css"
+    />
+  </head>
+  <body>
+    <div id="mirador-viewer"></div>
+
+    <script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script>
+    <script type="text/javascript">
+      var manifests = {{ manifestos_dict | safe }}; // O safe impede que o Django faça escape os caracteres especiais
+      console.log("Manifests carregados:", manifests);
+
+      var mirador = Mirador.viewer({
+          id: "mirador-viewer",
+          manifests: manifests,
+          windows: Object.keys(manifests).map(function(manifestUrl) {
+            return {
+                loadedManifest: manifestUrl,
+                canvasIndex: 0,
+                thumbnailNavigationPosition: "far-bottom",
+            };
+        }),
+      });
+    </script>
+  </body>
+</html>

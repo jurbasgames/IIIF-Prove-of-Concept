@@ -8,7 +8,7 @@ import io
 class Label(models.Model):
     language = models.CharField(
         max_length=10, db_index=True, default="None", blank=True)
-    value = models.CharField(max_length=255)
+    value = models.TextField()
 
     def __str__(self):
         return f"{self.language}: {self.value}"
