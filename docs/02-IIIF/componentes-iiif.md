@@ -1,5 +1,7 @@
 # Componentes básicos do IIIF
 
+No contexto da prova de conceito não foram implementados todos os componentes do IIIF, como por exemplo Collection, que ficou para implementação futura e Range que optei por não utilizar. Sequence também não foi implementado, pois é uma estrutura da versão 2.0 da API de Apresentação do IIIF e o foco do projeto foi a versão 3.0.
+
 ## Manifest (Manifesto)
 
 O manifesto é a principal estrutura do padrão IIIF, cada manifesto representa geralmente um objeto na vida real, como por exemplo uma pintura, fotografia, entrevista, um livro etc. Os manifestos são compostos por uma série de estruturas que descrevem aquele objeto, como por exemplo, a sequência de imagens que compõem um livro, a transcrição de um texto, a localização de um objeto em um mapa, etc.
@@ -13,6 +15,8 @@ O _Canvas_ é uma estrutura que representa uma visualização de um objeto, como
 ## Annotation (Anotação)
 
 A _Annotation_ pode representar uma imagem, um texto, um vídeo, um áudio, uma mídia em geral. Elas são compostas por um _Resource_ que irá declara qual é o tipo da midia e o conteúdo dela. As _Annotations_ são associadas a um _Canvas_ pelo campo de `target`.
+
+## Annotation Page (Página de Anotação)
 
 ## Content Resource (Conteúdo)
 
