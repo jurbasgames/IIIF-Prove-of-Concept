@@ -1,23 +1,79 @@
-# Componentes básicos do IIIF
+# Componentes Básicos do IIIF
 
-No contexto da prova de conceito não foram implementados todos os componentes do IIIF, como por exemplo Collection, que ficou para implementação futura e Range que optei por não utilizar. Sequence também não foi implementado, pois é uma estrutura da versão 2.0 da API de Apresentação do IIIF e o foco do projeto foi a versão 3.0.
+No contexto desta prova de conceito, nem todos os componentes do IIIF foram implementados. Componentes como **Collection** foram deixados para implementações futuras, e a **Range** foi optada por não ser utilizada. Além disso, a **Sequence** não foi implementada, uma vez que é uma estrutura da versão 2.0 da API de Apresentação do IIIF, enquanto o foco deste projeto foi a versão 3.0.
+
+## Visão Geral dos Componentes IIIF
+
+- **Manifest**: Representa um objeto digital, como uma pintura, um manuscrito, fotografia ou livro.
+- **Canvas**: Representa uma superfície onde as mídias são exibidas, como uma página de um livro.
+- **Annotation**: Representa conteúdos associados a um Canvas, como imagens ou textos.
+- **Annotation Page**: Agrupa múltiplas Annotations relacionadas a um Canvas, na prova de conceito usamos a relação um para um com _annotation_.
+- **Content Resource**: Recursos referenciados pelas Annotations, como imagens armazenadas no servidor de imagem.
 
 ## Manifest (Manifesto)
 
-O manifesto é a principal estrutura do padrão IIIF, cada manifesto representa geralmente um objeto na vida real, como por exemplo uma pintura, fotografia, entrevista, um livro etc. Os manifestos são compostos por uma série de estruturas que descrevem aquele objeto, como por exemplo, a sequência de imagens que compõem um livro, a transcrição de um texto, a localização de um objeto em um mapa, etc.
+O **Manifesto** é a principal estrutura do padrão IIIF. Cada manifesto representa geralmente um objeto no mundo real, como uma pintura, fotografia ou livro.
 
-A principal estrutura que todo manifesto deve ter são os _items_ que devem ser um ou mais _Canvas_.
+### Estrutura do Manifesto
+
+- **@context**: Define o contexto JSON-LD para a interpretação correta dos dados.
+- **id**: Identificador único do manifesto.
+- **type**: Tipo do recurso, geralmente "Manifest".
+- **label**: Título ou rótulo do manifesto.
+- **items**: Lista de Canvases que compõem o manifesto.
 
 ## Canvas (Tela)
 
-O _Canvas_ é uma estrutura que representa uma visualização de um objeto, como por exemplo uma página de um livro, uma imagem de uma pintura. Cada _Canvas_ pode ter uma ou mais imagens. As imagens são representadas por estruturas chamadas _Annotation_. Todo Canva deve ser associada a uma _Annotation_ pelo campo de `items`. As _Annotations_ são compostas por uma ou mais imagens e as _Annotations_ que não são definidas como _painting_ elas devem ser declaradas no campo de `annotations`, representando anotações textuais de fato.
+O **Canvas** é uma estrutura que representa uma visualização de um objeto, como uma página de um livro ou uma imagem de uma pintura. Cada Canvas pode conter uma ou mais Annotations que descrevem o conteúdo visualizado.
+
+### Estrutura do Canvas
+
+- **id**: Identificador único do Canvas.
+- **type**: Tipo do recurso, geralmente "Canvas".
+- **label**: Título ou rótulo do Canvas.
+- **items**: Lista de Annotations associadas ao Canvas.
 
 ## Annotation (Anotação)
 
-A _Annotation_ pode representar uma imagem, um texto, um vídeo, um áudio, uma mídia em geral. Elas são compostas por um _Resource_ que irá declara qual é o tipo da midia e o conteúdo dela. As _Annotations_ são associadas a um _Canvas_ pelo campo de `target`.
+A **Annotation** representa um conteúdo associado a um Canvas. Pode ser uma imagem, texto, vídeo ou áudio. As Annotations são compostas por um **Resource** que declara o tipo de mídia e seu conteúdo. Elas são vinculadas a um Canvas por meio do campo `target`.
+
+### Estrutura da Annotation
+
+- **id**: Identificador único da Annotation.
+- **type**: Tipo do recurso, geralmente "Annotation".
+- **motivation**: Motivação ou propósito da Annotation ("painting", "commenting").
+- **body**: O recurso associado, como uma imagem ou texto.
+- **target**: Referência ao Canvas ao qual a Annotation está vinculada.
 
 ## Annotation Page (Página de Anotação)
 
+A **Annotation Page** agrupa múltiplas, ou apenas uma, Annotations relacionadas a um Canvas específico.
+
+### Estrutura da Annotation Page
+
+- **id**: Identificador único da Annotation Page.
+- **type**: Tipo do recurso, geralmente "AnnotationPage".
+- **items**: Lista de Annotations contidas na página.
+
 ## Content Resource (Conteúdo)
 
-Os recursos geralmente são externos ao manifesto, como por exemplo uma imagem em um servidor de imagens como o Cantaloupe. Todo recurso deve ser referenciado a um _Canvas_, pois os Canvases representam uma visualização da mídia. Os recursos também podem ser textuais e declarados junto ao manifesto.
+Os **Content Resources** são recursos referenciados pelas Annotations, como imagens externas armazenadas em servidores de imagem (como o Cantaloupe), textos, vídeos ou outros tipos de mídia.
+
+### Estrutura do Content Resource
+
+- **id**: Identificador único do recurso.
+- **type**: Tipo do recurso ("Image" ou "Text").
+- **format**: Formato do recurso ("image/jpeg", "image/tif", "text/plain").
+- **width** e **height**: Dimensões do recurso.
+
+## Componentes Não Implementados
+
+Durante o desenvolvimento da prova de conceito, alguns componentes do IIIF não foram implementados:
+
+- **Collection**: Utilizado para agrupar múltiplos manifests. Será implementado em fases futuras para permitir a organização de coleções de objetos.
+- **Range**: Facilita a navegação dentro de um manifesto, permitindo a criação de capítulos ou seções. Optou-se por não utilizar este componente na versão atual.
+- **Sequence**: Estrutura da versão 2.0 da API de Apresentação, substituída pelas funcionalidades da versão 3.0.
+
+## Diagrama dos Componentes IIIF
+
+![Diagrama de Componentes IIIF](https://iiif.io/api/assets/images/data-model.png)
