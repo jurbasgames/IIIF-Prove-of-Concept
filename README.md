@@ -1,40 +1,112 @@
-# Prova de Conceito usando IIIF
+# Prova de Conceito IIIF
 
-Esse projeto é uma prova de conceito, com o objetivo de riar um sistema de imagens IIIF, utilizando o Cantaloupe como servidor de imagens, um banco de dados MySQL para armazenar os metadados das imagens e uma aplicação web Django para API de apresentação.
+Este projeto é uma prova de conceito com o objetivo de **criar um sistema de imagens IIIF**, utilizando o **Cantaloupe** como servidor de imagens, um banco de dados **MySQL** para armazenar os metadados das imagens e uma aplicação web **Django** para a API de apresentação.
 
-## Modelagem de dados
+## Índice
 
-Precisamos de um banco de dados para armazenar os metadados das imagens para gerar os manifesto, para isso estou usando um banco de dados MySQL e o ORM do Django.
+- [Prova de Conceito IIIF](#prova-de-conceito-iiif)
+  - [Índice](#índice)
+  - [Visão Geral](#visão-geral)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Modelagem de Dados](#modelagem-de-dados)
+  - [Servidor de Imagens Cantaloupe](#servidor-de-imagens-cantaloupe)
+    - [Configuração do Cantaloupe](#configuração-do-cantaloupe)
+  - [API de Apresentação Django](#api-de-apresentação-django)
+    - [Configurações](#configurações)
+    - [Como Rodar a API de Apresentação](#como-rodar-a-api-de-apresentação)
+      - [Rodando Sem Docker](#rodando-sem-docker)
+    - [Rodando com Docker](#rodando-com-docker)
+      - [Rodando o Projeto usando Docker](#rodando-o-projeto-usando-docker)
+  - [Referências](#referências)
 
-A modelagem conceitual foi feita usando o brModelo e exportada como xml. O arquivo xml está na pasta `docs`. A implementação usando o Django está declarada no arquivo `models.py`.
+## Visão Geral
 
-## Cantaloupe
+Este projeto demonstra a implementação de um sistema de imagens conforme os padrões do **IIIF** (International Image Interoperability Framework). Utilizamos o **Cantaloupe** para servir as imagens, **MySQL** para o armazenamento de metadados e **Django** para gerenciar a API de apresentação dos manifestos IIIF.
 
-Antes de servir a API de apresentação precisamos de um servidor de imagens IIIF, para isso estou usando o Cantaloupe, mais especificamente a imagem docker `edirom/cantaloupe` e suas configurações estão na pasta `cantaloupe`.
+## Pré-requisitos
 
-## API de apresentação
+Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
 
-A API de apresentação é feita em Django, com o objetivo de servir os manifestos das imagens. A implementação está na pasta `django`.
+- **Docker** e **Docker Compose**
+- **Python 3.8**
+- **MySQL**
+- **Git**
+
+## Modelagem de Dados
+
+Para o armazenamento dos metadados das imagens e geração dos manifestos, utilizamos o banco de dados **MySQL** junto com o **Django ORM**. A modelagem conceitual foi realizada utilizando o **BrModelo** e exportada como XML. O arquivo XML está na pasta `docs/02-IIIF`. A implementação dos modelos no Django está declarada no arquivo `django/models.py`.
+
+## Servidor de Imagens Cantaloupe
+
+O **Cantaloupe** é um servidor de imagens de código aberto que implementa a **API de Imagem do IIIF**. Ele é escolhido por sua capacidade de servir imagens em alta qualidade e escalabilidade, além de ser fácil de configurar e manter.
+
+### Configuração do Cantaloupe
+
+Na prova de conceito, utilizamos a imagem Docker `edirom/cantaloupe`, facilitando a configuração através do arquivo `cantaloupe.properties`, localizado na pasta `docs/03-Tecnologias/cantaloupe.md`.
+
+## API de Apresentação Django
+
+A **API de Apresentação** foi desenvolvida utilizando o framework **Django**, servindo como um CMS para a geração de manifestos IIIF. A escolha do Django se deu por sua facilidade de implementação, oferecendo uma interface administrativa automática, sistemas de autenticação e autorização, o que facilita o gerenciamento do conteúdo.
 
 ### Configurações
 
-Antes de rodar a API de apresentação **é necessário verificar as configurações de banco de dados** no arquivo `django/digital_collection/settings.py`. Por padrão o Django irá tentar se conectar com um banco de dados chamado `iiif_collection` com usuário `django_user` e senha `123456789`.
+Antes de rodar a API de apresentação, **é necessário verificar as configurações do banco de dados** no arquivo `django/digital_collection/settings.py`. Por padrão, o Django tentará se conectar com um banco de dados chamado `iiif_collection` com usuário `django_user` e senha `123456789`. As configurações podem ser ajustadas conforme necessário para o seu ambiente.
 
-### Como rodar a API de apresentação
+### Como Rodar a API de Apresentação
 
-Para **rodar a API de apresentação sem o Docker** devemos:
+#### Rodando Sem Docker
 
-1. Instalar o Python 3.8 (é necessário essa versão do Python para não ter problemas com o `prezi3_iiif`)
-2. Navegar até a pasta `django` usando o comando `cd django`, se estiver na raiz do projeto.
-3. Instalar as dependências do projeto usando o comando `pip install -r requirements.txt`. _Caso não funcione, tente `python -m pip install -r requirements.txt`_
-4. Rode as migrações do banco de dados usando o comando `python manage.py migrate`.
-5. Por fim, rode o servidor usando o comando `python manage.py runserver`.
+1. **Instalar o Python 3.8:**
 
-## Rodando o projeto usando Docker
+   - Certifique-se de ter o Python 3.8 instalado. Essa versão é necessária para evitar problemas com a dependência `prezi3_iiif`.
 
-Para rodar o projeto usando o Docker, é necessário ter o **Docker e o Docker Compose instalados**.
+2. **Navegar até a Pasta `django`:**
 
-1. Navegue até a raiz do projeto.
-2. Rode o comando `docker-compose up --build`.
-3. Acesse a API de apresentação em `http://localhost:8000/admin`.
-4. Acesse o Cantaloupe em `http://localhost:8182/`.
+   ```bash
+   cd django
+   ```
+
+3. **Instalar as Dependências do Projeto:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   Caso o comando acima não funcione, tente:
+
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
+4. **Rodar as Migrações do Banco de Dados:**
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Executar o Servidor de Desenvolvimento:**
+   ```bash
+   python manage.py runserver
+   ```
+
+### Rodando com Docker
+
+#### Rodando o Projeto usando Docker
+
+1. **Rodar o Docker Compose:**
+
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Acessar as Interfaces:**
+   - API de Apresentação Django: [http://localhost:8000/admin](http://localhost:8000/admin)
+   - Servidor de Imagens Cantaloupe: [http://localhost:8182/](http://localhost:8182/)
+
+## Referências
+
+- [Documentação Oficial do IIIF](https://iiif.io/)
+- [Documentação do Cantaloupe](https://cantaloupe-project.github.io/)
+- [Documentação do Django](https://docs.djangoproject.com/)
+- [Django REST Framework](https://www.django-rest-framework.org/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
