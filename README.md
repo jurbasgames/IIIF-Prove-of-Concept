@@ -4,7 +4,7 @@ Este projeto é uma prova de conceito com o objetivo de **criar um sistema de im
 
 ## Documentação do Projeto
 
-- [Documentação do Projeto](docs/01-Documentacao/README.md)
+- [Documentação do Projeto](./docs/01-Introducao/README.md)
 
 ## Índice
 
