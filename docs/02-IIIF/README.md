@@ -77,3 +77,7 @@ Durante o desenvolvimento da prova de conceito, alguns componentes do IIIF não 
 ## Diagrama dos Componentes IIIF
 
 ![Diagrama de Componentes IIIF](https://iiif.io/api/assets/images/data-model.png)
+
+# Próxima sessão
+
+- [Tecnologias usadas](../03-Tecnologias/README.md)

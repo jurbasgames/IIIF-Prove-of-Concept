@@ -17,3 +17,7 @@ O principal foco são as duas APIs principais do IIIF, são elas: a API de Image
 ## O que é IIIF?
 
 De acordo com o site oficial do IIIF, "IIIF é um conjunto de padrões abertos para a entrega de objetos digitais de alta qualidade e escalabilidade na internet." Em outras palavras, o IIIF (International Image Interoperability Framework) é um framework que define uma série de padrões e protocolos para facilitar o acesso, a visualização e a interoperabilidade de conteúdos digitais, principalmente imagens.
+
+# Próxima sessão
+
+- [Componentes Básicos do IIIF](../02-IIIF/README.md)

@@ -84,3 +84,7 @@ python manage.py createsuperuser
 ```bash
 python manage.py runserver
 ```
+
+# Próxima sessão
+
+- [Banco de Dados MySQL](../03-Tecnologias/mysql.md)

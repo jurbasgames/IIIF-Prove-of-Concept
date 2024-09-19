@@ -26,3 +26,7 @@ As migrações são usadas para registrar as alterações dos modelos no banco d
 python manage.py makemigrations
 python manage.py migrate
 ```
+
+# Próxima sessão
+
+- [Arquitetura do Sistema](../04-Prova-de-Conceito/arquitetura-sistema.md)
