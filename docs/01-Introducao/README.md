@@ -2,7 +2,7 @@
 
 1. [Introdução](#introdução)
 2. [O que é IIIF?](#o-que-é-iiif)
-3. [Componentes Básicos do IIIF](/docs/02-IIIF/componentes-iiif.md)
+3. [Componentes Básicos do IIIF](/docs/02-IIIF/README.md)
 4. [Servidor de Imagens](/docs/03-Tecnologias/cantaloupe.md)
 5. [API de Apresentação Django](/docs/03-Tecnologias/django.md)
 6. [Banco de Dados MySQL](/docs/03-Tecnologias/mysql.md)
