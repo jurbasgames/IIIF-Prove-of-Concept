@@ -2,9 +2,14 @@
 
 Este projeto é uma prova de conceito com o objetivo de **criar um sistema de imagens IIIF**, utilizando o **Cantaloupe** como servidor de imagens, um banco de dados **MySQL** para armazenar os metadados das imagens e uma aplicação web **Django** para a API de apresentação.
 
+## Documentação do Projeto
+
+- [Documentação do Projeto](docs/01-Documentacao/README.md)
+
 ## Índice
 
 - [Prova de Conceito IIIF](#prova-de-conceito-iiif)
+  - [Documentação do Projeto](#documentação-do-projeto)
   - [Índice](#índice)
   - [Visão Geral](#visão-geral)
   - [Pré-requisitos](#pré-requisitos)
