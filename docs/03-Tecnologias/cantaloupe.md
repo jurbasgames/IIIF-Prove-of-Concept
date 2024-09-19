@@ -2,25 +2,45 @@
 
 O Cantaloupe é um servidor de imagens de código aberto que implementa a API de Imagem do IIIF. Ele é uma ótima escolha pela sua capacidade de servir imagens em alta qualidade e escalabilidade, além de ser extremamente fácil de configurar e manter.
 
-Na prova de conceito, usamos a imagem docker `edirom/cantaloupe` o que facilita ainda mais a configuração sendo apenas necessário configurar o arquivo `cantaloupe.properties`.
+Na prova de conceito, utilizamos a imagem Docker `edirom/cantaloupe`, o que facilita ainda mais a configuração, sendo apenas necessário configurar o arquivo `cantaloupe.properties`.
 
-## Configuração
+## Visão Geral
 
-A configuração do Cantaloupe é feita através de um arquivo de propriedades chamado `cantaloupe.properties`. Esse arquivo contém uma grande quantidades de configurações, mas vamos focar nas mais importantes para o projeto.
+- **Redimensionamento:** Serve imagens em diferentes resoluções.
+- **Múltiplos formatos:** Compatível com diversos formatos de imagem, como JPEG, PNG, TIFF, etc.
+- **Diferentes opções de armazenamento:** Suporta armazenamento local e em nuvem como AWS S3, Azure Blob Storage e Google Cloud Storage.
 
-### Configuração de Storage
+## Instalação e Inicialização
 
-O Cantaloupe suporta diversos tipos de storage, como o sistema de arquivos local que é o que usamos na prova de conceito, mas também suporta S3, Azure, Google Cloud.
+### Usando Docker
 
-```properties
+1. Baixar a imagem Docker:
+
+```bash
+docker pull edirom/cantaloupe
+```
+
+2. Editar o arquivo de configurações `cantaloupe.properties`:
+
+```txt
 FilesystemSource.BasicLookupStrategy.path_prefix = /var/lib/cantaloupe/images/
 ```
 
-### Configuração de Versão do IIIF (Opcional)
+3. (Opcional) Desativar a versão 2.0:
 
-Como o Cantaloupe suporta tanto a versão 2.0 quanto a 3.0 da API de Imagem do IIIF, é ativado por padrão o endpoint da versão 2.0. Podemos desativar isso.
-
-```properties
+```txt
 endpoint.iiif.2.enabled = false
 endpoint.iiif.3.enabled = true
 ```
+
+4. Caso deseje iniciar apenas o Cantaloupe:
+
+```bash
+docker run -d -p 8182:8182 -v ./cantaloupe/cantaloupe.properties:/etc/cantaloupe.properties edirom/cantaloupe
+```
+
+# Referências
+
+- [Site oficial](https://cantaloupe-project.github.io/)
+- [Repositório GitHub](https://github.com/cantaloupe-project/cantaloupe)
+- [Imagem Docker do Cantaloupe](https://hub.docker.com/r/edirom/cantaloupe)
