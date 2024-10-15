@@ -41,13 +41,17 @@ def create_manifest(object_id):
         # Imagens
         painting_annotation_items = []
         for image in canvas.items.all():
+            if image.external_url:
+                image_url = image.external_url
+            else:
+                image_url = f"{IMAGE_SERVER}/iiif/3/{image.pk}.{image.format.lower()}/full/max/0/default.jpg"
             image_annotation = Annotation(
                 id=f"{APP_HOST}/manifest/{object_id}/canvas/{canvas.pk}/annotation/{image.pk}",
                 type="Annotation",
                 motivation="painting",
                 target=canvas_iiif.id,
                 body=ResourceItem(
-                    id=f"{IMAGE_SERVER}/iiif/3/{image.pk}.{image.format.lower()}/full/max/0/default.jpg",
+                    id=image_url,
                     format=f"image/{image.format.lower()}",
                     type="Image",
                     height=image.height,

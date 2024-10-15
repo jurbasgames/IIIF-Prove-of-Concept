@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator
 from PIL import Image as PilImage
 from django.core.files.base import ContentFile
 import io
+from django.forms import ValidationError
+import requests
 
 
 class Label(models.Model):
@@ -20,7 +22,8 @@ class Image(models.Model):
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
     width = models.IntegerField(
         validators=[MinValueValidator(1)], editable=False, null=True, blank=True)
-    file = models.FileField()
+    file = models.FileField(blank=True, null=True)
+    external_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"Image {self.id}"
@@ -46,7 +49,32 @@ class Image(models.Model):
 
             buffer.close()
 
+        elif self.external_url:
+            splitted_url = self.external_url.split("/")
+            format = splitted_url[-1].split(".")[1]
+            iiif_info_url = "/".join(splitted_url[:-4]) + "/info.json"
+            try:
+                response = requests.get(iiif_info_url)
+                iiif_info = response.json()
+                self.width = iiif_info['width']
+                print(iiif_info['width'])
+                self.height = iiif_info['height']
+                print(iiif_info['height'])
+                self.format = format
+                print(iiif_info['@id'].split('.')[-1].upper())
+            except Exception as e:
+                raise ValueError(
+                    f"Erro ao obter metadados da imagem IIIF: {e}")
+
         super().save(*args, **kwargs)
+
+    def clean(self):
+        if not self.file and not self.external_url:
+            raise ValidationError(
+                "Deve fornecer uma imagem local ou uma URL IIIF.")
+        if self.file and self.external_url:
+            raise ValidationError(
+                "Deve fornecer apenas uma imagem local ou uma URL IIIF, não ambas.")
 
 
 class TextAnnotation(models.Model):
